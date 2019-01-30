@@ -52,7 +52,7 @@
 		    }
 	      });
 
-	      $.get("http://ficusillo.mooo.com:9000/cgi-bin/getMotionParam.sh?query=snapshot_interval", function(data, status){
+	      $.get("http://ficusillo.mooo.com:9000/cgi-bin/getAutoSnapStatus.sh", function(data, status){
 	            if(data.trim() != "0" ) {
 	                $("#checkSnaps").attr('checked', true);
 	            } else {
@@ -82,7 +82,7 @@
 	}
 
 	function snapshootsHandler(){
-	          $.get("http://ficusillo.mooo.com:9000/cgi-bin/getMotionParam.sh?query=snapshot_interval", function(data, status){
+	          $.get("http://ficusillo.mooo.com:9000/cgi-bin/switchAutoSnapStatus.sh");/*, function(data, status){
 	                var url = "http://ficusillo.mooo.com:9000/cgi-bin/setMotionParam.sh?snapshot_interval=";
 	                if(data.trim() == "0") {
 	                   url = url + "600";
@@ -90,7 +90,9 @@
 			   url = url + "0";
 			}
 			$.get(url);
+			
 		  });
+	*/
 	}
         		  
       </script>

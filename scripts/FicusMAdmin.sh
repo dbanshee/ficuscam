@@ -28,7 +28,7 @@ motion_getParam() {
   param=$1
   url="${ficusAdminUrl}/config/get?query=${param}"
   response=$(motion_getUrl "$url")
-  value=$(echo "$response" | grep -oP ".*${param} = \K(.*).*$")
+  value=$(echo "$response" | grep -oP ".*${param} = \K(.*).*$" | xargs)
   echo "$value"
 }
 
@@ -37,32 +37,41 @@ motion_setParam() {
   value=$2
   url="${ficusAdminUrl}/config/set?${param}=${value}"
   response=$(motion_getUrl "$url")
-  echo "$response"
+  value=$(echo "$response" | grep -oP ".*${param} = \K(.*).*$")
+  echo "$value"
 }
 
-motion_takeSnapShot() {
+motion_takeSnapShoot() {
   url="${ficusAdminUrl}/action/snapshot"
   response=$(motion_getUrl "$url")
   echo $response
 }
 
-motion_changeAutoSnaps() {
-  mode=$1
-  
-  if [[ ( $mode == 0 ) ]] ; then
-    intervalSecs="0"
-  else 
-    intervalSecs="${SNAPS_INTERVAL_SECS}"
+motion_switchAutoSnaps() {
+  interval=$(motion_getAutoSnapShootStatus)
+  if [[ ( "${interval}" == 0 ) ]] ; then
+    newInterval="${SNAPS_INTERVAL_SECS}"
+  else
+    newInterval="0"
   fi
-  
-  url="${ficusAdminUrlSetParam}snapshot_interval=${intervalSecs}"
-  wget -qO- $url
+
+  response=$(motion_setParam 'snapshot_interval' "${newInterval}")
+  echo $response
+}
+
+motion_getAutoSnapShootStatus() {
+  interval=$(motion_getParam 'snapshot_interval')
+  if [[ ( $interval = 0 ) ]] ; then
+    echo "0"
+  else
+    echo "1"
+  fi
 }
 
 #Main
 case "$1" in
 	"") 
-          echo "Usage: $0 [--listMotionParams|-l] [--getMotionParam|-g] [--takeSnapShot] [--enableDisableAutoSnaps]"
+          echo "Usage: $0 [--listMotionParams|-l] [--getMotionParam|-g] [--takeSnapShot] [--getAutoSnapStatus] [--switchAutoSnaps]"
           exit -1
 	;;
 	--listMotionParams|-l)
@@ -83,14 +92,16 @@ case "$1" in
           motion_setParam $2 $3;
         ;;
         --takeSnapShot|-s)
-          motion_takeSnapShot;
+          motion_takeSnapShoot;
         ;;
-	--enableDisableAutoSnaps)
-          if [[ ( $# != 2 ) || ( "$2" != "0" && "$2" != "1" ) ]] ; then
-            echo "Bad Request"
-            exit -1
-          fi
-
-          motion_changeAutoSnaps $2;
+        --getAutoSnapStatus)
+          motion_getAutoSnapShootStatus;
+        ;;
+	--switchAutoSnaps)
+          #if [[ ( $# != 2 ) || ( "$2" != "0" && "$2" != "1" ) ]] ; then
+          #  echo "Bad Request"
+          #  exit -1
+          #fi
+          motion_switchAutoSnaps;
 	;;
 esac
