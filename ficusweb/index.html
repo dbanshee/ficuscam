@@ -43,6 +43,23 @@
 			const win = window.open('./' + file, '_blank');
                         win.focus();
 	       });
+
+	       $.get("http://ficusillo.mooo.com:9000/cgi-bin/getMotionParam.sh?query=stream_grey", function(data, status){
+	            if(data.trim() == "on") {
+	                $("#checkGrey").attr('checked', true);
+	            } else {
+                        $("#checkGrey").attr('checked', false);
+		    }
+	      });
+
+	      $.get("http://ficusillo.mooo.com:9000/cgi-bin/getMotionParam.sh?query=snapshot_interval", function(data, status){
+	            if(data.trim() != "0" ) {
+	                $("#checkSnaps").attr('checked', true);
+	            } else {
+	                $("#checkSnaps").attr('checked', false);
+	            }
+	      });
+
 	   });
       </script>
       <script>
@@ -51,7 +68,31 @@
 			alert("Picture saved");
 		});
 	}
-      
+
+	function streamGreyHandler(){
+                  $.get("http://ficusillo.mooo.com:9000/cgi-bin/getMotionParam.sh?query=stream_grey", function(data, status){
+                       var url = "http://ficusillo.mooo.com:9000/cgi-bin/setMotionParam.sh?stream_grey=";
+                       if(data.trim() == "on") {
+                            url = url + "off";
+                       } else {
+                           url = url + "on"
+                       }
+                      $.get(url);
+                 });
+	}
+
+	function snapshootsHandler(){
+	          $.get("http://ficusillo.mooo.com:9000/cgi-bin/getMotionParam.sh?query=snapshot_interval", function(data, status){
+	                var url = "http://ficusillo.mooo.com:9000/cgi-bin/setMotionParam.sh?snapshot_interval=";
+	                if(data.trim() == "0") {
+	                   url = url + "600";
+	                } else {
+			   url = url + "0";
+			}
+			$.get(url);
+		  });
+	}
+        		  
       </script>
 
   </head>
@@ -113,8 +154,14 @@
 			<a href="http://ficusillo.mooo.com:9081">
                           <img src="http://ficusillo.mooo.com:9081/0/stream">
 			</a>
-     		  	<div style="margin-top:10px">
-				<input type="button" value="Take Snap" onClick="takeSnapHandler()" />
+     		  	<div style="margin-top:15px">
+				<div style="margin-top:10px">
+					<input type="button" value="Take Snap" onClick="takeSnapHandler()" />
+				</div>
+				<div style="margin-top:10px">
+					<input type="checkbox" id="checkGrey"  onClick="streamGreyHandler()"> Stream Grey</input>
+    	                               	<input type="checkbox" id="checkSnaps"  onClick="snapshootsHandler()"> Auto Snaps </input>
+                               </div>
 			</div>
                    </div>
                 </div>
