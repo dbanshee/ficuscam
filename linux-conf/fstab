@@ -4,4 +4,4 @@ PARTUUID=6c60c26e-02  /               ext4    defaults,noatime  0       1
 # a swapfile is not a swap partition, no line here
 #   use  dphys-swapfile swap[on|off]  for that
 
-tmpfs 	/home/pi/motion/tmp 	tmpfs defaults,uid=109,gid=114,mode=755 0 0
+tmpfs 	/home/pi/motion/tmp 	tmpfs defaults,uid=109,gid=114,mode=755,size=20m 0 0
